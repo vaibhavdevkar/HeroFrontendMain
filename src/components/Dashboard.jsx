@@ -1,8 +1,11 @@
-import React,{ useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './Dashboard.css'
 import { BsGraphUpArrow } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import Navbar from './Navbar';
+import { NavLink } from 'react-router-dom';
+import { TbReportSearch } from "react-icons/tb";
+import { FaRegChartBar } from "react-icons/fa";
 
 
 const Dashboard = () => {
@@ -51,133 +54,134 @@ const Dashboard = () => {
   };
 
   return (
-   
-    <div className='first'style={{overflow:"auto", maxHeight: "100vh" }}>
-       <Navbar headline={headline}/>
-        <div className='text  '>
+
+    <div className='first' style={{ overflow: "auto", maxHeight: "100vh" }}>
+      <Navbar headline={headline} />
+      <div className='text  '>
         <div className="row row-cols-1 mx-sm-3 
          mx-lg-0 row-cols-sm-2 row-cols-lg-4"id="dashboard"
-         style={{margin:''}}
-         >
-   
-    <div className="col mb-1 ">
-      <div className="container-fluid">
-        <label>Date:</label>
-        <span id='span'>{getCurrentDate()}</span>
-      </div>
-    </div>
-  
-  
-    <div className="col mb-1 ">
-      <div className="container-fluid">
-        <label>Shift:</label>
-        <span id='span'>2899</span>
-      </div>
-    </div>
-  
-  
-    <div className="col mb-1 ">
-      <div className="container-fluid">
-        <label>Line Setting:</label>
-        <span id='span'className='span3'>726</span>
-      </div>
-    </div>
-  
-  
-    <div className="col mb-1 ">
-      <div className="container-fluid">
-        <label>Time:</label>
-        <span id='span'>{formatTime(currentTime)}</span>
-      </div>
-  
-    </div>
-    </div>
-</div>
-{/* <hr style={{border:'0.8px solid grey',width:'95%',margin:'auto'}} /> */}
+          style={{ margin: '' }}
+        >
 
-        <div className='container-fluid' >
+          <div className="col mb-1 ">
+            <div className="container-fluid">
+              <label>Date:</label>
+              <span id='span'>{getCurrentDate()}</span>
+            </div>
+          </div>
+
+
+          <div className="col mb-1 ">
+            <div className="container-fluid">
+              <label>Shift:</label>
+              <span id='span'>2899</span>
+            </div>
+          </div>
+
+
+          <div className="col mb-1 ">
+            <div className="container-fluid">
+              <label>Line Setting:</label>
+              <span id='span' className='span3'>726</span>
+            </div>
+          </div>
+
+
+          <div className="col mb-1 ">
+            <div className="container-fluid">
+              <label>Time:</label>
+              <span id='span'>{formatTime(currentTime)}</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      {/* <hr style={{border:'0.8px solid grey',width:'95%',margin:'auto'}} /> */}
+
+      <div className='container-fluid' >
         <div class="row mt-4 mx-auto flex-column flex-sm-row" >
-      <div className="col" >
-        
-        <table className="table-lg table-custom ">
-          <thead>
-            <tr>
-            <th><span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-              HOT WATER
-              <FaInfoCircle /> </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-            <td colspan="2">
-            <div className="row">
-              <div className="col-8">Pump Status</div>
-              <div className="col-4">{ptlineData.HWPUMPSTATLBL}</div>
-            </div>
-          </td>
-          
-            </tr>
-            <tr>
-            <td colspan="2">
-            <div className="row">
-              <div className="col-8">Pump Motor Current</div>
-              <div className="col-4">{ptlineData.HWPUMPMOTLBL}</div>
-            </div>
-          </td>
-            </tr>
-            <tr>
-            <td colspan="2">
-            <div className="row">
-              <div className="col-8">Tank Level</div>
-              <div className="col-4">{ptlineData.HWTANKLVLLBL}</div>
-            </div>
-          </td>
-            </tr>
-            <tr>
-            <td colspan="2">
-            <div className="row">
-              <div className="col-8">Circulation Pressure</div>
-              <div className="col-4">{ptlineData.HWCIRPRSRLBL}</div>
-            </div>
-          </td>
-            </tr>
-            <tr>
-            <td colspan="2">
-            <div className="row">
-              <div className="col-8">Temperature</div>
-              <div className="col-4">{ptlineData.HWTEMPLBL}</div>
-            </div>
-          </td>
-            </tr>
-            <tr>
-            <td colspan="2">
-            <div className="row">
-              <div className="col-8">Soft Water Flow</div>
-              <div className="col-4">{ptlineData.HWSOFTWATERLBL}</div>
-            </div>
-          </td>
-            </tr>
-            </tbody>
-        </table>
-      </div>
-      <div className="col">
-        <table className="table-lg table-custom">
-          <thead>
-            <tr>
-            <th><span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-            Pre-Degrease
-            <FaInfoCircle />
-            </span>
-        
+          <div className="col" >
 
-            
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+            <table className="table-lg table-custom ">
+              <thead>
+                <tr>
+                  <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                   <NavLink to="/dashoboard/hotwaterreport"> <TbReportSearch  style={{color : "white"}}/></NavLink>
+                    HOT WATER
+                    <NavLink to="/dashboard/hotwatercharts"> <FaRegChartBar style={{color : "white"}} /></NavLink>
+                  </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Pump Status</div>
+                      <div className="col-4">{ptlineData.HWPUMPSTATLBL}</div>
+                    </div>
+                  </td>
+
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Pump Motor Current</div>
+                      <div className="col-4">{ptlineData.HWPUMPMOTLBL}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Tank Level</div>
+                      <div className="col-4">{ptlineData.HWTANKLVLLBL}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Circulation Pressure</div>
+                      <div className="col-4">{ptlineData.HWCIRPRSRLBL}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Temperature</div>
+                      <div className="col-4">{ptlineData.HWTEMPLBL}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Soft Water Flow</div>
+                      <div className="col-4">{ptlineData.HWSOFTWATERLBL}</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="col">
+            <table className="table-lg table-custom">
+              <thead>
+                <tr>
+                  <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <BsGraphUpArrow />
+                    Pre-Degrease
+                    <FaInfoCircle />
+                  </span>
+
+
+
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -227,21 +231,21 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-      <div className="col">
-        <table className="table-lg table-custom">
-          <thead>
-            <tr>
-            <th><span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-               Degrease 
-              <FaInfoCircle />
-              </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+            </table>
+          </div>
+          <div className="col">
+            <table className="table-lg table-custom">
+              <thead>
+                <tr>
+                  <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <BsGraphUpArrow />
+                    Degrease
+                    <FaInfoCircle />
+                  </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -291,21 +295,21 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-      <div className="col">
-        <table className="table-lg table-custom">
-          <thead>
-            <tr>
-            <th><span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-            Water Rinse 1
-            <FaInfoCircle/>
-            </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+            </table>
+          </div>
+          <div className="col">
+            <table className="table-lg table-custom">
+              <thead>
+                <tr>
+                  <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <BsGraphUpArrow />
+                    Water Rinse 1
+                    <FaInfoCircle />
+                  </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -355,21 +359,21 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-      <div className="col ">
-        <table className="table-lg table-custom">
-          <thead>
-            <tr>
-            <th><span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-             Water Rinse 2
-            <FaInfoCircle/>
-            </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+            </table>
+          </div>
+          <div className="col ">
+            <table className="table-lg table-custom">
+              <thead>
+                <tr>
+                  <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <BsGraphUpArrow />
+                    Water Rinse 2
+                    <FaInfoCircle />
+                  </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -419,27 +423,27 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-    </div>
-
+            </table>
+          </div>
         </div>
-        <div className='container-fluid'>
+
+      </div>
+      <div className='container-fluid'>
         <div className="row mt-4 mx-auto flex-column flex-sm-row">
-      <div className="col">
-        <table className="table-lg table-custom2">
-          <thead>
-            <tr>
-              <th>
-                <span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-              DM WATER 1
-              <FaInfoCircle/>
-              </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+          <div className="col">
+            <table className="table-lg table-custom2">
+              <thead>
+                <tr>
+                  <th>
+                    <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <BsGraphUpArrow />
+                      DM WATER 1
+                      <FaInfoCircle />
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -486,29 +490,29 @@ const Dashboard = () => {
                     <div className="row">
                       <div className="col-8">Conductivity</div>
                       <div className="col-4" id="conductivity">
-                        
+
                       </div>
                     </div>
                   </td>
                 </tr>
               </tbody>
-          
-        </table>
-      </div>
-      <div className="col">
-        <table className="table-lg table-custom2">
-          <thead>
-            <tr>
-            <th>
-            <span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-              OXSILAN
-              <FaInfoCircle/>
-              </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+
+            </table>
+          </div>
+          <div className="col">
+            <table className="table-lg table-custom2">
+              <thead>
+                <tr>
+                  <th>
+                    <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <BsGraphUpArrow />
+                      OXSILAN
+                      <FaInfoCircle />
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -559,22 +563,22 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-      <div className="col">
-        <table className="table-lg table-custom2">
-          <thead>
-            <tr>
-            <th>
-            <span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-              Water Rinse 3
-              <FaInfoCircle/>
-              </span>
-            </th>
-            </tr>
-          </thead>
-          <tbody>
+            </table>
+          </div>
+          <div className="col">
+            <table className="table-lg table-custom2">
+              <thead>
+                <tr>
+                  <th>
+                    <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <BsGraphUpArrow />
+                      Water Rinse 3
+                      <FaInfoCircle />
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -627,22 +631,22 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-      <div className="col">
-        <table className="table-lg table-custom2">
-          <thead>
-            <tr>
-            <th>
-            <span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-              Water Rinse 4
-              <FaInfoCircle/>
-              </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+            </table>
+          </div>
+          <div className="col">
+            <table className="table-lg table-custom2">
+              <thead>
+                <tr>
+                  <th>
+                    <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <BsGraphUpArrow />
+                      Water Rinse 4
+                      <FaInfoCircle />
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -693,22 +697,22 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-      <div className="col">
-        <table className="table-lg table-custom2">
-          <thead>
-            <tr>
-            <th>
-            <span style={{display:'flex',justifyContent:'space-between'}}>
-              <BsGraphUpArrow />
-              Fresh DM Water
-              <FaInfoCircle/>
-              </span>
-            </th>
-            </tr>
-          </thead>
-          <tbody>
+            </table>
+          </div>
+          <div className="col">
+            <table className="table-lg table-custom2">
+              <thead>
+                <tr>
+                  <th>
+                    <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <BsGraphUpArrow />
+                      Fresh DM Water
+                      <FaInfoCircle />
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr>
                   <td colspan="2">
                     <div className="row">
@@ -759,12 +763,12 @@ const Dashboard = () => {
                   </td>
                 </tr>
               </tbody>
-        </table>
-      </div>
-    </div>
-
+            </table>
+          </div>
         </div>
-      
+
+      </div>
+
     </div>
   )
 }
