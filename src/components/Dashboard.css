@@ -47,14 +47,14 @@
         margin-top: 1rem;
       }
       .table-custom th{
-        background-color: rgb(237, 125, 13);
+        background-color: #ff6600;
         color:white;
         width:150%;
         padding:0.5rem;
         text-align: left;
       }
       .table-custom2 th{
-        background-color: rgb(232, 46, 46);
+        background-color: #ff6600;
         color: white;
         padding: 0.5rem;
         width:150%;
@@ -128,9 +128,6 @@
              }
              #dashboard{
               margin-left: 2.5rem !important;
-             }
-        
-             
-
+             }      
       }
       

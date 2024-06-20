@@ -6,88 +6,93 @@ import './Analog.css'
 function StripedColumnsExample() {
   const [headline, setHeadline] = useState(" ANALOG PARAMETER SETTING SCREEN ");
 
-  const [ai1data, setai1data] = useState('');
-  const [ai2data, setai2data] = useState('');
-  const [ai3data, setai3data] = useState('');
-  const [ai4data, setai4data] = useState('');
+  const [ai1data, setAi1data] = useState('');
+  const [ai2data, setAi2data] = useState('');
+  const [ai3data, setAi3data] = useState('');
+  const [ai4data, setAi4data] = useState('');
 
+  // Fetch data from API 1 every minute
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:5002/api/ai1get");
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        setai1data(data);
-        // console.log(data)
+        setAi1data(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data from API 1:", error);
       }
     };
 
-    fetchData();
-  }, []);
+    const intervalId = setInterval(fetchData, 60000); // 60,000 milliseconds = 1 minute
+    fetchData(); // Immediately fetch once when the component mounts
 
-  //table 2
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []); // Only runs once on component mount
+
+  // Fetch data from API 2 every minute
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:5002/api/ai2get");
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const ai2data = await response.json();
-        setai2data(ai2data);
-        // console.log(ai2data)
+        const data = await response.json();
+        setAi2data(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data from API 2:", error);
       }
     };
 
-    fetchData();
-  }, []);
+    const intervalId = setInterval(fetchData, 60000);
+    fetchData(); // Initial fetch when component mounts
 
-  //table 3
+    return () => clearInterval(intervalId);
+  }, []); // Cleanup on unmount
+
+  // Fetch data from API 3 every minute
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:5002/api/ai3get");
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const ai3data = await response.json();
-        setai3data(ai3data);
-        // console.log(ai3data)
+        const data = await response.json();
+        setAi3data(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data from API 3:", error);
       }
     };
 
+    const intervalId = setInterval(fetchData, 60000);
     fetchData();
-  }, []);
 
-  //table 4
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []); // Only runs once when component mounts
+
+  // Fetch data from API 4 every minute
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:5002/api/ai4get");
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const ai4data = await response.json();
-        setai4data(ai4data);
-        // console.log(ai4data)
+        const data = await response.json();
+        setAi4data(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data from API 4:", error);
       }
     };
 
-    fetchData();
+    const intervalId = setInterval(fetchData, 60000);
+    fetchData(); // Initial fetch when component mounts
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
   return (
@@ -129,7 +134,7 @@ function StripedColumnsExample() {
           <td>Al1 CH7</td>
           <td>Al1 CH8</td>
         </tr>
-        <tr >
+        {/* <tr >
           <td>1</td>
           <td>Scale _Min</td>
           <td>{ai1data.AI1CH1_Scale_Min}</td>
@@ -140,8 +145,8 @@ function StripedColumnsExample() {
           <td>{ai1data.AI1CH6_Scale_Min}</td>
           <td>{ai1data.AI1CH7_Scale_Min}</td>
           <td>{ai1data.AI1CH8_Scale_Min}</td>
-        </tr>
-        <tr>
+        </tr> */}
+        {/* <tr>
           <td>2</td>
           <td>Scale_Max</td>
           <td>{ai1data.AI1CH1_Scale_Max}</td>
@@ -152,9 +157,9 @@ function StripedColumnsExample() {
           <td>{ai1data.AI1CH6_Scale_Max}</td>
           <td>{ai1data.AI1CH7_Scale_Max}</td>
           <td>{ai1data.AI1CH8_Scale_Max}</td>
-        </tr>
+        </tr> */}
         <tr>
-          <td>3</td>
+          <td>1</td>
           <td>High_High_Set_Value</td>
           <td>{ai1data.AI1CH1_High_High_Set_Value}</td>
           <td>{ai1data.AI1CH2_High_High_Set_Value}</td>
@@ -166,7 +171,7 @@ function StripedColumnsExample() {
           <td>{ai1data.AI1CH8_High_High_Set_Value}</td>
         </tr>
         <tr>
-          <td>4</td>
+          <td>2</td>
           <td>High_Set_Value</td>
           <td>{ai1data.AI1CH1_High_Set_Value}</td>
           <td>{ai1data.AI1CH2_High_Set_Value}</td>
@@ -178,7 +183,7 @@ function StripedColumnsExample() {
           <td>{ai1data.AI1CH8_High_Set_Value}</td>
         </tr>
         <tr>
-          <td>5</td>
+          <td>3</td>
           <td>Low_Set_Value</td>
           <td>{ai1data.AI1CH1_Low_Set_Value}</td>
           <td>{ai1data.AI1CH2_Low_Set_Value}</td>
@@ -190,7 +195,7 @@ function StripedColumnsExample() {
           <td>{ai1data.AI1CH8_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>6</td>
+          <td>4</td>
           <td>Low_Low_Set-Value</td>
           <td>{ai1data.AI1CH1_Low_Low_Set_Value}</td>
           <td>{ai1data.AI1CH2_Low_Low_Set_Value}</td>
@@ -202,7 +207,7 @@ function StripedColumnsExample() {
           <td>{ai1data.AI1CH8_Low_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>7</td>
+          <td>5</td>
           <td > Timer_Set_Time</td>
           <td>{ai1data.AI1CH1_Timer_Set_Time}</td>
           <td>{ai1data.AI1CH2_Timer_Set_Time}</td>
@@ -214,8 +219,8 @@ function StripedColumnsExample() {
           <td>{ai1data.AI1CH8_Timer_Set_Time}</td>
         </tr>
       </tbody>
-    </Table> 
-       <Table responsive bordered hover size="sm"  style={{marginTop:"1rem", width:"90%" ,height:"450px",borderColor:'grey',marginBottom:'2rem'}} className='text-center  table-bordered'  >
+   </Table> 
+        <Table responsive bordered hover size="sm"  style={{marginTop:"1rem", width:"90%" ,height:"450px",borderColor:'grey',marginBottom:'2rem'}} className='text-center  table-bordered'  >
        <tbody>
         <tr >
           <td rowSpan={3} >Sr No</td>
@@ -249,32 +254,8 @@ function StripedColumnsExample() {
           <td>Al2 CH7</td>
           <td>Al2 CH8</td>
         </tr>
-        <tr >
+        <tr>
           <td>1</td>
-          <td>Scale _Min</td>
-          <td>{ai2data.AI2CH1_Scale_Min}</td>
-          <td>{ai2data.AI2CH2_Scale_Min}</td>
-          <td>{ai2data.AI2CH3_Scale_Min}</td>
-          <td>{ai2data.AI2CH4_Scale_Min}</td>
-          <td>{ai2data.AI2CH5_Scale_Min}</td>
-          <td>{ai2data.AI2CH6_Scale_Min}</td>
-          <td>{ai2data.AI2CH7_Scale_Min}</td>
-          <td>{ai2data.AI2CH8_Scale_Min}</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Scale_Max</td>
-          <td>{ai2data.AI2CH1_Scale_Max}</td>
-          <td>{ai2data.AI2CH2_Scale_Max}</td>
-          <td>{ai2data.AI2CH3_Scale_Max}</td>
-          <td>{ai2data.AI2CH4_Scale_Max}</td>
-          <td>{ai2data.AI2CH5_Scale_Max}</td>
-          <td>{ai2data.AI2CH6_Scale_Max}</td>
-          <td>{ai2data.AI2CH7_Scale_Max}</td>
-          <td>{ai2data.AI2CH8_Scale_Max}</td>
-        </tr>
-        <tr>
-          <td>3</td>
           <td>High_High_Set_Value</td>
           <td>{ai2data.AI2CH1_High_High_Set_Value}</td>
           <td>{ai2data.AI2CH2_High_High_Set_Value}</td>
@@ -285,7 +266,7 @@ function StripedColumnsExample() {
           <td>{ai2data.AI2CH7_High_High_Set_Value}</td>
           <td>{ai2data.AI2CH8_High_High_Set_Value}</td>    </tr>
         <tr>
-          <td>4</td>
+          <td>2</td>
           <td>High_Set_Value</td>
           <td>{ai2data.AI2CH1_High_Set_Value}</td>
           <td>{ai2data.AI2CH2_High_Set_Value}</td>
@@ -297,7 +278,7 @@ function StripedColumnsExample() {
           <td>{ai2data.AI2CH8_High_Set_Value}</td>
         </tr>
         <tr>
-          <td>5</td>
+          <td>3</td>
           <td>Low_Set_Value</td>
           <td>{ai2data.AI2CH1_Low_Set_Value}</td>
           <td>{ai2data.AI2CH2_Low_Set_Value}</td>
@@ -309,7 +290,7 @@ function StripedColumnsExample() {
           <td>{ai2data.AI2CH8_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>6</td>
+          <td>4</td>
           <td>Low_Low_Set-Value</td>
           <td>{ai2data.AI2CH1_Low_Low_Set_Value}</td>
           <td>{ai2data.AI2CH2_Low_Low_Set_Value}</td>
@@ -321,7 +302,7 @@ function StripedColumnsExample() {
           <td>{ai2data.AI2CH8_Low_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>7</td>
+          <td>5</td>
           <td > Timer_Set_Time</td>
           <td>{ai2data.AI2CH1_Timer_Set_Time}</td>
           <td>{ai2data.AI2CH2_Timer_Set_Time}</td>
@@ -368,32 +349,8 @@ function StripedColumnsExample() {
           <td>Al3 CH7</td>
           <td>Al3 CH8</td>
         </tr>
-        <tr >
+        <tr>
           <td>1</td>
-          <td>Scale _Min</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-          <td>{ai3data.AI3CH1_Scale_Min}</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Scale_Max</td>
-          <td>{ai3data.AI3CH1_Scale_Max}</td>
-          <td>{ai3data.AI3CH2_Scale_Max}</td>
-          <td>{ai3data.AI3CH3_Scale_Max}</td>
-          <td>{ai3data.AI3CH4_Scale_Max}</td>
-          <td>{ai3data.AI3CH5_Scale_Max}</td>
-          <td>{ai3data.AI3CH6_Scale_Max}</td>
-          <td>{ai3data.AI3CH7_Scale_Max}</td>
-          <td>{ai3data.AI3CH8_Scale_Max}</td>
-        </tr>
-        <tr>
-          <td>3</td>
           <td>High_High_Set_Value</td>
           <td>{ai3data.AI3CH1_High_High_Set_Value}</td>
           <td>{ai3data.AI3CH2_High_High_Set_Value}</td>
@@ -405,7 +362,7 @@ function StripedColumnsExample() {
           <td>{ai3data.AI3CH8_High_High_Set_Value}</td>
         </tr>
         <tr>
-          <td>4</td>
+          <td>2</td>
           <td>High_Set_Value</td>
           <td>{ai3data.AI3CH1_High_Set_Value}</td>
           <td>{ai3data.AI3CH2_High_Set_Value}</td>
@@ -417,7 +374,7 @@ function StripedColumnsExample() {
           <td>{ai3data.AI3CH8_High_Set_Value}</td>
         </tr>
         <tr>
-          <td>5</td>
+          <td>3</td>
           <td>Low_Set_Value</td>
           <td>{ai3data.AI3CH1_Low_Set_Value}</td>
           <td>{ai3data.AI3CH2_Low_Set_Value}</td>
@@ -429,7 +386,7 @@ function StripedColumnsExample() {
           <td>{ai3data.AI3CH8_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>6</td>
+          <td>4</td>
           <td>Low_Low_Set-Value</td>
           <td>{ai3data.AI3CH1_Low_Low_Set_Value}</td>
           <td>{ai3data.AI3CH2_Low_Low_Set_Value}</td>
@@ -441,7 +398,7 @@ function StripedColumnsExample() {
           <td>{ai3data.AI3CH8_Low_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>7</td>
+          <td>5</td>
           <td > Timer_Set_Time</td>
           <td>{ai3data.AI3CH1_Timer_Set_Time}</td>
           <td>{ai3data.AI3CH2_Timer_Set_Time}</td>
@@ -488,7 +445,7 @@ function StripedColumnsExample() {
           <td>Al4 CH7</td>
           <td>Al4 CH8</td>
         </tr>
-        <tr >
+        {/* <tr >
           <td>1</td>
           <td>Scale _Min</td>
           <td>{ai4data.AI4CH1_Scale_Min}</td>
@@ -499,8 +456,8 @@ function StripedColumnsExample() {
           <td>{ai4data.AI4CH6_Scale_Min}</td>
           <td>{ai4data.AI4CH7_Scale_Min}</td>
           <td>{ai4data.AI4CH8_Scale_Min}</td>
-        </tr>
-        <tr>
+        </tr> */}
+        {/* <tr>
           <td>2</td>
           <td>Scale_Max</td>
           <td>{ai4data.AI4CH1_Scale_Max}</td>
@@ -511,9 +468,9 @@ function StripedColumnsExample() {
           <td>{ai4data.AI4CH6_Scale_Max}</td>
           <td>{ai4data.AI4CH7_Scale_Max}</td>
           <td>{ai4data.AI4CH8_Scale_Max}</td>
-        </tr>
+        </tr> */}
         <tr>
-          <td>3</td>
+          <td>1</td>
           <td>High_High_Set_Value</td>
           <td>{ai4data.AI4CH1_High_High_Set_Value}</td>
           <td>{ai4data.AI4CH2_High_High_Set_Value}</td>
@@ -525,7 +482,7 @@ function StripedColumnsExample() {
           <td>{ai4data.AI4CH8_High_High_Set_Value}</td>
         </tr>
         <tr>
-          <td>4</td>
+          <td>2</td>
           <td>High_Set_Value</td>
           <td>{ai4data.AI4CH1_High_Set_Value}</td>
           <td>{ai4data.AI4CH2_High_Set_Value}</td>
@@ -537,7 +494,7 @@ function StripedColumnsExample() {
           <td>{ai4data.AI4CH8_High_Set_Value}</td>
         </tr>
         <tr>
-          <td>5</td>
+          <td>3</td>
           <td>Low_Set_Value</td>
           <td>{ai4data.AI4CH1_Low_Set_Value}</td>
           <td>{ai4data.AI4CH2_Low_Set_Value}</td>
@@ -549,7 +506,7 @@ function StripedColumnsExample() {
           <td>{ai4data.AI4CH8_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>6</td>
+          <td>4</td>
           <td>Low_Low_Set-Value</td>
           <td>{ai4data.AI4CH1_Low_Low_Set_Value}</td>
           <td>{ai4data.AI4CH2_Low_Low_Set_Value}</td>
@@ -561,7 +518,7 @@ function StripedColumnsExample() {
           <td>{ai4data.AI4CH8_Low_Low_Set_Value}</td>
         </tr>
         <tr>
-          <td>7</td>
+          <td>5</td>
           <td > Timer_Set_Time</td>
           <td>{ai4data.AI4CH1_Timer_Set_Time}</td>
           <td>{ai4data.AI4CH2_Timer_Set_Time}</td>

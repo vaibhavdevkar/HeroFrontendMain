@@ -18,7 +18,7 @@ const Hotwaterreport = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://192.168.29.147:5002/api/getalldata');
+      const response = await fetch('http://localhost:5002/api/getalldata');
       const jsonData = await response.json();
       setData(jsonData);
       setIsLoading(false);
@@ -31,7 +31,7 @@ const Hotwaterreport = () => {
   const filterData = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`http://192.168.29.147:5002/api/getalldata?startDate=${startDate}&endDate=${endDate}`);
+      const response = await fetch(`http://localhost:5002/api/getalldata?startDate=${startDate}&endDate=${endDate}`);
       const jsonData = await response.json();
       setData(jsonData);
       setIsLoading(false);
@@ -42,15 +42,17 @@ const Hotwaterreport = () => {
   };
 
   const formatDateTime = (dateTimeString) => {
-    const options = {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    };
-    return new Date(dateTimeString).toLocaleString(undefined, options);
+    const date = new Date(dateTimeString);
+  
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-0); // Get last 2 digits of the year
+  
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    const second = String(date.getSeconds()).padStart(2, '0');
+  
+    return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
   };
 
   const exportToExcel = () => {
@@ -58,12 +60,12 @@ const Hotwaterreport = () => {
     const fileExtension = '.xlsx';
     const formattedData = data.map(row => ({
       DateTime: formatDateTime(row.Date_Time),
-      HWPUMPSTATLBL: row.HWPUMPSTATLBL,
-      HWPUMPMOTLBL: row.HWPUMPMOTLBL,
-      HWTANKLVLLBL: row.HWTANKLVLLBL,
-      HWCIRPRSRLBL: row.HWCIRPRSRLBL,
-      HWTEMPLBL: row.HWTEMPLBL,
-      HWSOFTWATERLBL: row.HWSOFTWATERLBL
+      PumpStatus: row.HWPUMPSTATLBL,
+      PumpMotorCurrent: row.HWPUMPMOTLBL,
+      TankLevel: row.HWTANKLVLLBL,
+      CirculationPressure: row.HWCIRPRSRLBL,
+      Temperature: row.HWTEMPLBL,
+      // HWSOFTWATERLBL: row.HWSOFTWATERLBL
     }));
     const ws = XLSX.utils.json_to_sheet(formattedData);
     const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
@@ -108,12 +110,12 @@ const Hotwaterreport = () => {
             <thead className="thead-dark">
               <tr>
                 <th>DateTime</th>
-                <th>HWPUMPSTATLBL</th>
-                <th>HWPUMPMOTLBL</th>
-                <th>HWTANKLVLLBL</th>
-                <th>HWCIRPRSRLBL</th>
-                <th>HWTEMPLBL</th>
-                <th>HWSOFTWATERLBL</th>
+                <th>Pump Status</th>
+                <th>Pump Motor Current</th>
+                <th>Tank Level</th>
+                <th>Circulation Pressure</th>
+                <th>Temperature</th>
+                {/* <th>HWSOFTWATERLBL</th> */}
               </tr>
             </thead>
             <tbody>
@@ -125,7 +127,7 @@ const Hotwaterreport = () => {
                   <td>{row.HWTANKLVLLBL}</td>
                   <td>{row.HWCIRPRSRLBL}</td>
                   <td>{row.HWTEMPLBL}</td>
-                  <td>{row.HWSOFTWATERLBL}</td>
+                  {/* <td>{row.HWSOFTWATERLBL}</td> */}
                 </tr>
               ))}
             </tbody>

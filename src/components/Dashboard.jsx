@@ -6,12 +6,14 @@ import Navbar from './Navbar';
 import { NavLink } from 'react-router-dom';
 import { TbReportSearch } from "react-icons/tb";
 import { FaRegChartBar } from "react-icons/fa";
+import axios from 'axios';
 
 
 const Dashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [headline, setHeadline] = useState("PT LINE DASHBOARD");
   const [ptlineData, setPtlineData] = useState('');
+  const [motorData, setMotorData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +29,9 @@ const Dashboard = () => {
       }
     };
 
+    const intervalId = setInterval(fetchData, 1000);
     fetchData();
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
   useEffect(() => {
@@ -53,38 +57,72 @@ const Dashboard = () => {
     return `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
   };
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5002/api/getfreqrunning'); // Adjust the endpoint URL to your backend
+        setMotorData(response.data);
+        // console.log(response.data)
+        // setLoading(false);
+      } catch (err) {
+        console.log('Error fetching data');
+        // setLoading(false);
+      }
+    };
+
+    // Initial fetch
+    fetchData();
+
+    // Set interval to fetch data every minute (60000 milliseconds)
+    const intervalId = setInterval(fetchData, 1000);
+
+    // Cleanup to clear the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const getPumpStatusColor = (status) => {
+    switch (status) {
+      case 'ON':
+        return 'green';
+      case 'OFF':
+        return 'red';
+      case 'FAULT':
+        return 'gray';
+      default:
+        return 'black'; // Default color if the status is unknown
+    }
+  };
+
   return (
 
     <div className='first' style={{ overflow: "auto", maxHeight: "100vh" }}>
       <Navbar headline={headline} />
-      <div className='text  '>
+      <div className='text'>
         <div className="row row-cols-1 mx-sm-3 
-         mx-lg-0 row-cols-sm-2 row-cols-lg-4"id="dashboard"
+         mx-lg-0 row-cols-sm-2 row-cols-lg-12"id="dashboard"
           style={{ margin: '' }}
         >
-
           <div className="col mb-1 ">
             <div className="container-fluid">
               <label>Date:</label>
               <span id='span'>{getCurrentDate()}</span>
             </div>
           </div>
-
-
-          <div className="col mb-1 ">
+          {/* <div className="col mb-1 ">
             <div className="container-fluid">
               <label>Shift:</label>
               <span id='span'>2899</span>
             </div>
-          </div>
+          </div> */}
 
 
-          <div className="col mb-1 ">
+          {/* <div className="col mb-1 ">
             <div className="container-fluid">
-              <label>Line Setting:</label>
-              <span id='span' className='span3'>726</span>
+              <label>Line:</label>
+              <span id='span'>726</span>
             </div>
-          </div>
+          </div> */}
 
 
           <div className="col mb-1 ">
@@ -106,9 +144,9 @@ const Dashboard = () => {
               <thead>
                 <tr>
                   <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                   <NavLink to="/dashoboard/hotwaterreport"> <TbReportSearch  style={{color : "white"}}/></NavLink>
+                    <NavLink to="/hotwaterreport"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                     HOT WATER
-                    <NavLink to="/dashboard/hotwatercharts"> <FaRegChartBar style={{color : "white"}} /></NavLink>
+                    <NavLink to="/hotwatercharts"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
                   </span>
                   </th>
                 </tr>
@@ -118,7 +156,9 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.HWPUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>
+                        {ptlineData.HWPUMPSTATLBL}
+                      </div>
                     </div>
                   </td>
 
@@ -127,7 +167,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.HWPUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.HWPUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -143,7 +183,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.HWCIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.HWCIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -151,15 +191,23 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Temperature</div>
-                      <div className="col-4">{ptlineData.HWTEMPLBL}</div>
+                      <div className="col-4">{ptlineData.HWTEMPLBL}&deg; C</div>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2">
                     <div className="row">
-                      <div className="col-8">Soft Water Flow</div>
-                      <div className="col-4">{ptlineData.HWSOFTWATERLBL}</div>
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M1_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M1_OutputCurrent / 100) * (motorData.M1_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -171,13 +219,13 @@ const Dashboard = () => {
               <thead>
                 <tr>
                   <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <BsGraphUpArrow />
+                    <NavLink to="/predegreasereport"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                     Pre-Degrease
-                    <FaInfoCircle />
+                    <NavLink to="/predegreasechart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                    {/* <BsGraphUpArrow />
+                    Pre-Degrease
+                    <FaInfoCircle /> */}
                   </span>
-
-
-
                   </th>
                 </tr>
               </thead>
@@ -186,7 +234,8 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.PDPUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>
+                        {ptlineData.PDPUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -194,7 +243,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.PDPUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.PDPUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -210,7 +259,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.PDCIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.PDCIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -218,15 +267,23 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Temperature</div>
-                      <div className="col-4">{ptlineData.PDTEMPLBL}</div>
+                      <div className="col-4">{ptlineData.PDTEMPLBL}&deg; C</div>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2">
                     <div className="row">
-                      <div className="col-8">Soft Water Flow</div>
-                      <div className="col-4">{ptlineData.PDSOFTWATERLBL}</div>
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M2_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M2_OutputCurrent / 100) * (motorData.M2_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -238,9 +295,12 @@ const Dashboard = () => {
               <thead>
                 <tr>
                   <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <BsGraphUpArrow />
+                    <NavLink to="/degreasereport"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                     Degrease
-                    <FaInfoCircle />
+                    <NavLink to="/degreasechart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                    {/* <BsGraphUpArrow />
+                    Degrease
+                    <FaInfoCircle /> */}
                   </span>
                   </th>
                 </tr>
@@ -250,7 +310,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.DPUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>{ptlineData.DPUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -258,7 +318,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.DPUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.DPUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -274,7 +334,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.DCIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.DCIRPRSRLBL} Bar </div>
                     </div>
                   </td>
                 </tr>
@@ -282,15 +342,23 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Temperature</div>
-                      <div className="col-4">{ptlineData.DTEMPLBL}</div>
+                      <div className="col-4">{ptlineData.DTEMPLBL}&deg; C</div>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2">
                     <div className="row">
-                      <div className="col-8">Soft Water Flow</div>
-                      <div className="col-4">{ptlineData.DSOFTWATERLBL}</div>
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M3_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M3_OutputCurrent / 100) * (motorData.M3_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -302,9 +370,12 @@ const Dashboard = () => {
               <thead>
                 <tr>
                   <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <BsGraphUpArrow />
+                    <NavLink to="/wr1report"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                     Water Rinse 1
-                    <FaInfoCircle />
+                    <NavLink to="/wr1chart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                    {/* <BsGraphUpArrow />
+                    Water Rinse 1
+                    <FaInfoCircle /> */}
                   </span>
                   </th>
                 </tr>
@@ -314,7 +385,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.WR1PUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>{ptlineData.WR1PUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -322,7 +393,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.WR1PUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.WR1PUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -338,7 +409,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.WR1CIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.WR1CIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -346,15 +417,23 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Temperature</div>
-                      <div className="col-4">{ptlineData.WR1TEMPLBL}</div>
+                      <div className="col-4">{ptlineData.WR1TEMPLBL}&deg; C</div>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2">
                     <div className="row">
-                      <div className="col-8">Soft Water Flow</div>
-                      <div className="col-4">{ptlineData.WR1SOFTWATERLBL}</div>
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M3_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M4_OutputCurrent / 100) * (motorData.M4_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -366,9 +445,12 @@ const Dashboard = () => {
               <thead>
                 <tr>
                   <th><span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <BsGraphUpArrow />
+                    <NavLink to="/wr2report"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                     Water Rinse 2
-                    <FaInfoCircle />
+                    <NavLink to="/wr2chart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                    {/* <BsGraphUpArrow />
+                    Water Rinse 2
+                    <FaInfoCircle /> */}
                   </span>
                   </th>
                 </tr>
@@ -378,7 +460,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.WR2PUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>{ptlineData.WR2PUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -386,7 +468,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.WR2PUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.WR2PUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -402,7 +484,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.WR2CIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.WR2CIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -410,15 +492,23 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Temperature</div>
-                      <div className="col-4">{ptlineData.WR2TEMPLBL}</div>
+                      <div className="col-4">{ptlineData.WR2TEMPLBL}&deg; C</div>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2">
                     <div className="row">
-                      <div className="col-8">Soft Water Flow</div>
-                      <div className="col-4">{ptlineData.WR2SOFTWATERLBL}</div>
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M5_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M5_OutputCurrent / 100) * (motorData.M5_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -436,9 +526,12 @@ const Dashboard = () => {
                 <tr>
                   <th>
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <BsGraphUpArrow />
+                      <NavLink to="/dmwater1report"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                       DM WATER 1
-                      <FaInfoCircle />
+                      <NavLink to="/dmwaterchart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                      {/* <BsGraphUpArrow />
+                      DM WATER 1
+                      <FaInfoCircle /> */}
                     </span>
                   </th>
                 </tr>
@@ -448,7 +541,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.DMPUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>{ptlineData.DMPUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -456,7 +549,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.DMPUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.DMPUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -472,7 +565,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.DMCIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.DMCIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -480,7 +573,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">PH</div>
-                      <div className="col-4"></div>
+                      <div className="col-4">{ptlineData.DMPHLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -489,9 +582,29 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Conductivity</div>
-                      <div className="col-4" id="conductivity">
+                      <div className="col-4">
+                        {/* id="conductivity"
+                      "DMTEMPLBL": 5.17,
+                      "DMSOFTWATERLBL": 183, */}
 
+                        {ptlineData.DMConductivity}
                       </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M6_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M6_OutputCurrent / 100) * (motorData.M6_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -505,9 +618,12 @@ const Dashboard = () => {
                 <tr>
                   <th>
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <BsGraphUpArrow />
+                      <NavLink to="/oxsilianreport"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                       OXSILAN
-                      <FaInfoCircle />
+                      <NavLink to="/oxilanchart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                      {/* <BsGraphUpArrow />
+                      OXSILAN
+                      <FaInfoCircle /> */}
                     </span>
                   </th>
                 </tr>
@@ -517,7 +633,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.OXPUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>{ptlineData.OXPUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -525,7 +641,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.OXPUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.OXPUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -541,7 +657,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.OXCIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.OXCIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -549,7 +665,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">PH</div>
-                      <div className="col-4"></div>
+                      <div className="col-4"> {ptlineData.OXPHLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -558,7 +674,23 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Conductivity</div>
-                      <div className="col-4" id="conductivity"></div>
+                      <div className="col-4"> {ptlineData.OXConductivity}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M7_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M7_OutputCurrent / 100) * (motorData.M7_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -571,9 +703,12 @@ const Dashboard = () => {
                 <tr>
                   <th>
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <BsGraphUpArrow />
+                      <NavLink to="/wr3report"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                       Water Rinse 3
-                      <FaInfoCircle />
+                      <NavLink to="/wr3chart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                      {/* <BsGraphUpArrow />
+                      Water Rinse 3
+                      <FaInfoCircle /> */}
                     </span>
                   </th>
                 </tr>
@@ -583,7 +718,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.WR3PUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>{ptlineData.WR3PUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -591,7 +726,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.WR3PUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.WR3PUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -607,7 +742,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.WR3CIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.WR3CIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -615,7 +750,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">PH</div>
-                      <div className="col-4"></div>
+                      <div className="col-4">{ptlineData.WR3PHLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -624,9 +759,25 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Conductivity</div>
-                      <div className="col-4" id="conductivity">
-                        {" "}
+                      <div className="col-4" >
+                        {ptlineData.WR3Conductivity}
                       </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M8_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M8_OutputCurrent / 100) * (motorData.M8_OutputVoltage / 1000)).toFixed(2)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -639,9 +790,12 @@ const Dashboard = () => {
                 <tr>
                   <th>
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <BsGraphUpArrow />
+                      <NavLink to="/wr4report"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                       Water Rinse 4
-                      <FaInfoCircle />
+                      <NavLink to="/wr4chart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                      {/* <BsGraphUpArrow />
+                      Water Rinse 4
+                      <FaInfoCircle /> */}
                     </span>
                   </th>
                 </tr>
@@ -651,7 +805,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.WR4PUMPSTATLBL}</div>
+                      <div className="col-4" style={{ color: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}>{ptlineData.WR4PUMPSTATLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -659,7 +813,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.WR4PUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.WR4PUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -675,7 +829,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.WR4CIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.WR4CIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -683,7 +837,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">PH</div>
-                      <div className="col-4"></div>
+                      <div className="col-4">{ptlineData.WR4PHLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -692,7 +846,23 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Conductivity</div>
-                      <div className="col-4" id="conductivity"></div>
+                      <div className="col-4">{ptlineData.WR4Conductivity}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M9_OutputFrequency} Hz</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Running KW</div>
+                      <div className="col-4">{((motorData.M9_OutputCurrent / 100) * (motorData.M9_OutputVoltage / 1000)).toFixed(0)} KW</div>
                     </div>
                   </td>
                 </tr>
@@ -705,9 +875,12 @@ const Dashboard = () => {
                 <tr>
                   <th>
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <BsGraphUpArrow />
+                      <NavLink to="/freshwaterreport"> <TbReportSearch style={{ color: "white" }} /></NavLink>
                       Fresh DM Water
-                      <FaInfoCircle />
+                      <NavLink to="/freshdmwaterchart"> <FaRegChartBar style={{ color: "white" }} /></NavLink>
+                      {/* <BsGraphUpArrow />
+                      Fresh DM Water
+                      <FaInfoCircle /> */}
                     </span>
                   </th>
                 </tr>
@@ -717,15 +890,16 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Status</div>
-                      <div className="col-4">{ptlineData.FDWPUMPSTATLBL}</div>
+                      <div className="col-2" style={{ border: '1px solid white', borderRadius : "20px",padding: '1px', backgroundColor: getPumpStatusColor(ptlineData.HWPUMPSTATLBL) }}><center style={{color : "white"}}>{ptlineData.FDWPUMPSTATLBL}</center></div>
                     </div>
                   </td>
                 </tr>
+
                 <tr>
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Pump Motor Current</div>
-                      <div className="col-4">{ptlineData.FDWPUMPMOTLBL}</div>
+                      <div className="col-4">{ptlineData.FDWPUMPMOTLBL} A</div>
                     </div>
                   </td>
                 </tr>
@@ -741,7 +915,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Circulation Pressure</div>
-                      <div className="col-4">{ptlineData.FDWCIRPRSRLBL}</div>
+                      <div className="col-4">{ptlineData.FDWCIRPRSRLBL} Bar</div>
                     </div>
                   </td>
                 </tr>
@@ -749,7 +923,7 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">PH</div>
-                      <div className="col-4"></div>
+                      <div className="col-4">{ptlineData.FDWPHLBL}</div>
                     </div>
                   </td>
                 </tr>
@@ -758,7 +932,15 @@ const Dashboard = () => {
                   <td colspan="2">
                     <div className="row">
                       <div className="col-8">Conductivity</div>
-                      <div className="col-4" id="conductivity"></div>
+                      <div className="col-4">{ptlineData.FDWConductivity}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div className="row">
+                      <div className="col-8">Output Frequency</div>
+                      <div className="col-4">{motorData.M10_OutputFrequency}</div>
                     </div>
                   </td>
                 </tr>

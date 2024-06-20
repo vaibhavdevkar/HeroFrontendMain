@@ -3,7 +3,7 @@ import logo from '../img/logo1.png'
 import hero from '../img/hero-moto-logo1.jpg'
 // import logo2 from '../img/logo.39b041adc108b3260a6c811f4e7c5fd0.svg'
 import './Navbar.css'
-import { Link } from 'react-router-dom'
+import { Link , NavLink} from 'react-router-dom'
 import { useState } from 'react';
 import { CiMenuBurger } from "react-icons/ci";
 import { BsSpeedometer2, BsListUl } from "react-icons/bs";
@@ -97,13 +97,12 @@ const Navbar = (props) => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/analogparameter" style={{ textDecoration: 'none' }} >
-                    <a className="nav-link " aria-current="page" href="/"
-                    >
+                  <Link to="/analogparameter" className="nav-link" style={{ textDecoration: 'none' }} >
+                    {/* <a className="nav-link " aria-current="page" href="/"> */}
                       <span style={{ display: 'flex', justifyContent: 'space-between', color: 'white', marginRight: '0.8rem' }}>
                         <BsSpeedometer2 style={{ fontSize: '1.5rem' }} />
                         Analog parameter</span>
-                    </a>
+                    {/* </a> */}
                   </Link>
                 </li>
                 < li className="nav-item">
